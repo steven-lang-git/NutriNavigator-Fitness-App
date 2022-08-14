@@ -1,0 +1,101 @@
+
+
+.sidebar{
+  width: 250px;
+  min-width: 250px;
+  padding: 20px 20px;
+  margin: 20px auto 0 auto;
+  box-shadow: 0 0 6px hsl(210 14% 90%);
+
+}
+
+.link{
+  display: flex;
+  align-items: cover;
+  cursor: pointer;
+  border-radius: 30px;
+}
+.link:hover{
+  background-color: #e8f5fe;
+  color: #50b7f5;
+  transition: color 100ms ease-out;
+}
+.link > h2{
+  font-weight: 700;
+  font-size: 20px;
+  margin-right: 20px;
+}
+
+
+
+.link > .MuiSvgIcon-root {
+  padding: 25px;
+}
+
+#post{
+  width: 100%;
+  height: 50px;
+  background-color: hsl(203, 89%, 64%);
+  border-radius: 20px;
+  color: white;
+  font-weight: 700;
+  text-transform: inherit;
+}
+
+
+a {
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
+}
+
+.right{
+  padding-left: 40px;
+  width:80%;
+}
+.right > h1{
+margin:10px;
+}
+
+.log_btn{
+  padding-top:10px;
+}
+
+.root{
+  flexGrow: 1
+}
+
+.paper{
+  display: "flex";
+  justify-content: "center";
+  align-items: "center";
+  text-align: "center";
+  box-shadow: "4px 4px 4px rgba(0, 0, 0, 0.25)";
+  border-radius: "25px";
+}
+
+.MuiAppBar-colorPrimary{
+  background-color: #fff !important;
+  color:black !important;
+  padding: 20px 20px !important;
+  margin: 20px auto 0 auto !important;
+  box-shadow: 0 0 6px hsl(210 14% 90%) !important;
+}
+
+#logo {
+  display: inline-block;
+  height: 100%;
+}
+  
+.photo {
+  width: 64px;
+  height: 64px;
+}
+
+.brand-logo {
+  display: inline-flex !important;
+}
+
+.MuiBox-root MuiBox-root-2
+{
+  align-items: flex-end!important;
+}

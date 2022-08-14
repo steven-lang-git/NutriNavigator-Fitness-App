@@ -1,0 +1,33 @@
+
+.home__image{
+    width: 70%;
+    margin-left: 230px;
+    height: 75vh;
+}
+.home__para{
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    margin-left: 570px;
+    margin-top: 350px;
+ } 
+ .home__para h1{
+     font-size: 40px;
+     font-style: italic;
+     color: white; 
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     
+
+     
+ }
+
+ .right h1{
+    margin:10px;
+    }
+
+.completed{
+    text-decoration: line-through;
+}
