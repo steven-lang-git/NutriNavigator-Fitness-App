@@ -1,3 +1,4 @@
+//useEffect() hook loads the user data into React component user state
 import React, { useState, useEffect } from 'react'
 import BottomMenu from './BottomMenu'
 import Grid from '@material-ui/core/Grid';
@@ -26,6 +27,10 @@ import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
+
+import { useForm } from "react-hook-form";
+
 
 function Meals() {
     const [items, setItems] = useState([
@@ -34,14 +39,13 @@ function Meals() {
         { itemName: 'item3', quantity: 2, isSelected: true },
     ])
 
-    // const [calories,]
 
-
-
+    const { register, handleSubmit, reset } = useForm();
     //useState hook allows us to track state in a function component
     const [inputValue, setInputValue] = useState('');
     const [totalItemCount, setTotalItemCount] = useState(6);
-    const [totalCalCount, setCalCount] = useState();
+    const [rows,setRows] = useState(
+        []);
     const handleAddButtonClick = () => {
         const newItem = {
             itemName: inputValue,
@@ -105,17 +109,9 @@ function Meals() {
         },
     }));
 
-    function createData(name, calories, fat, carbs, protein) {
-        return { name, calories, fat, carbs, protein };
+    function createData(food_name, calories, fat, carbs, protein) {
+        return { food_name, calories, fat, carbs, protein };
     }
-
-    const rows = [
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-    ];
 
 
     const totalCalsValue = ((rows.reduce((a, v) => a = a + v.calories, 0)));
@@ -146,59 +142,21 @@ function Meals() {
             remMacros[key] = parseInt(recommendedMacros[key] - totalMacros[key]);
         }
     }
-    // const total = rows.reduce((acc,current)=>
-    // {
-    //     const{
-    //         name,
-    //         calories,
-    //         fat,
-    //         carbs,
-    //         protein
-    //     } = current;
-    //     const currentMeal = acc[name]??{
-    //         calorieTotal: 0,
-    //         fatTotal: 0,
-    //         carbsTotal:0,
-    //         proteinTotal:0
-    //     };
-    //     acc[name] = {
-    //         calorieTotal : currentMeal.calorieTotal+calories,
-    //         fatTotal : currentMeal.fatTotal+fat,
-    //         carbsTotal:currentMeal.carbsTotal+carbs,
-    //         proteinTotal:currentMeal.proteinTotal+protein,
-    //     };
-    //     return acc;
-    // }, {});
-
-    // console.log(total);
-
-    // const defaultGroup = datas.map((i)=>({
-    //     Calories: 0,
-    //     Fat:0,
-    //     Carbs:0,
-    //     Protein:0
-    // }));
-
-    // const [group,setGroup] = useState(defaultGroup);
-    // const onChange = (type,value,index) =>{
-    //     // g & idx are arbitrary values
-    //     const newGroup = group.map((g,idex )=>{
-    //         if (index==idx)
-    //             return{
-    //                 ...g,
-    //                 [type]:parseInt(value||0)
-    //             };
-    //             return g;
-
-    //     });
-    //     setGroup(newGroup);
-    // };
-
-    // const total = group.reduce((acc,cur)=>{
-    //     acc+= cur.Calories + cur.Fat + cur.Carbs + c
-    // })
 
 
+    function onSubmit(data){
+   
+        for (var key in data) {
+            if (key !=='food_name'){
+                if (data.hasOwnProperty(key)) {
+                    data[key] = parseInt(data[key]);
+                }
+            }
+        }
+        const newRows = [...rows, data];
+        console.log(newRows)
+        setRows(newRows);
+    }
 
 
 
@@ -216,7 +174,7 @@ function Meals() {
                         <h4>
                             Record your meals with your caloric intake.
                         </h4>
-
+          
                     </Paper>
                 </Grid>
                 {/*This item will be 12 units on extra small screens */}
@@ -236,30 +194,30 @@ function Meals() {
                             </Fab>
                         </div> */}
                         <div>
-                            <form>
+                            <form onSubmit = {handleSubmit(onSubmit)}>
                                 <label>
-
-                                    <TextField id="outlined-basic" label="Name" variant="outlined" type="text" name="food_name" />
+                                    {/* ...register allows to register an input or select element to React Hook Form    */}
+                                    <TextField id="outlined-basic" label="Name" variant="outlined" type="text" name="food_name" {...register('food_name')} />
                                 </label>
                                 <label>
-
-                                    <TextField id="outlined-basic" label="Calories" variant="outlined" type="text" name="calories" />
+                                    <TextField id="outlined-basic" label="Calories" variant="outlined" type="text" name="calories" {...register('calories')}/>
                                 </label>
                                 <label>
-
-                                    <TextField id="outlined-basic" label="Fat" variant="outlined" type="text" name="fat" />
+                                    <TextField id="outlined-basic" label="Fat" variant="outlined" type="text" name="fat" {...register('fat')}/>
                                 </label>
                                 <label>
-
-                                    <TextField id="outlined-basic" label="Carbs" variant="outlined" type="text" name="carbs" />
+                                    <TextField id="outlined-basic" label="Carbs" variant="outlined" type="text" name="carbs" {...register('carbs')}/>
                                 </label>
                                 <label>
-
-                                    <TextField id="outlined-basic" label="Protein" variant="outlined" type="text" name="protein" />
+                                    <TextField id="outlined-basic" label="Protein" variant="outlined" type="text" name="protein" {...register('protein')}/>
                                 </label>
-                                <Fab color="primary" aria-label="add">
-                                    <AddIcon onClick={() => handleAddButtonClick()} />
-                                </Fab>
+                                {/* <button type="submit" className="btn btn-primary mr-1">Submit</button> */}
+                                <Button type="submit" className="btn btn-primary mr-1" variant="contained" endIcon={<AddIcon />}>
+  Add
+</Button>
+                                {/* <Fab color="primary" aria-label="add">
+                                    <AddIcon type="submit"/>
+                                </Fab> */}
                             </form>
                         </div>
                         <TableContainer component={Paper}>
@@ -275,9 +233,9 @@ function Meals() {
                                 </TableHead>
                                 <TableBody>
                                     {rows.map((row) => (
-                                        <StyledTableRow key={row.name}>
+                                        <StyledTableRow key={row.food_name}>
                                             <StyledTableCell component="th" scope="row">
-                                                {row.name}
+                                                {row.food_name}
                                             </StyledTableCell>
                                             <StyledTableCell align="right">{row.calories}</StyledTableCell>
                                             <StyledTableCell align="right">{row.fat}</StyledTableCell>
