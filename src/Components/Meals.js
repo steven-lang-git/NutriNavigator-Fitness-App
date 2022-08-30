@@ -28,7 +28,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
-
+import EditIcon from '@mui/icons-material/Edit';
 import { useForm } from "react-hook-form";
 
 
@@ -229,6 +229,7 @@ function Meals() {
                                         <StyledTableCell align="right">Fat&nbsp;(g)</StyledTableCell>
                                         <StyledTableCell align="right">Carbs&nbsp;(g)</StyledTableCell>
                                         <StyledTableCell align="right">Protein&nbsp;(g)</StyledTableCell>
+                                        <StyledTableCell align="right">Edit</StyledTableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -241,6 +242,10 @@ function Meals() {
                                             <StyledTableCell align="right">{row.fat}</StyledTableCell>
                                             <StyledTableCell align="right">{row.carbs}</StyledTableCell>
                                             <StyledTableCell align="right">{row.protein}</StyledTableCell>
+                                            <StyledTableCell align="right">
+                                                <Button type="submit" className="btn btn-primary mr-1" variant="contained" endIcon={<EditIcon />}>
+  Edit
+</Button></StyledTableCell>
                                         </StyledTableRow>
                                     ))}
 
