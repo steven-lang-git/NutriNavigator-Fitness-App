@@ -42,6 +42,10 @@ const IndeterminateCheckbox = React.forwardRef(
         )
     }
 );
+// const [totalCal,setTotalCal] = React.useState(0)
+// const [totalFat,setTotalFat] = React.useState(0)
+// const [totalCarbs,setTotalCarbs] = React.useState(0)
+// const [totalProtein,setTotalProtein] = React.useState(0)
 
 const inputStyle = {
     padding: 0,
@@ -56,12 +60,13 @@ const EditableCell = ({
     column: { id },
     updateData, //function supplied to table instance
     editableRowIndex, //index of row requesting to edit
+    calTotal: initial,
 }) => {
     const [value, setValue] = React.useState(initialValue);
-
     const onChange = (e) => {
         setValue(e.target.value);
     }
+
 
     //update external data when input is blurred
     const onBlur = () => {
@@ -93,7 +98,7 @@ EditableCell.propTypes = {
         index: PropTypes.number.isRequired
     }),
     column: PropTypes.shape({
-        id: PropTypes.number.isRequired
+        id: PropTypes.string.isRequired
     }),
     updateData: PropTypes.func.isRequired
 
@@ -220,6 +225,8 @@ const EnhancedTable = ({
 
     const addMealHandler = (user) => {
         const newData = data.concat([user]);
+        const totalCalsValue = ((data.reduce((a, v) => a = a + v.calories, 0)));
+        console.log(totalCalsValue)
         setData(newData);
     };
 
