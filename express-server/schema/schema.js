@@ -41,7 +41,7 @@ const Mutation = new GraphQLObjectType({
     name:'Mutation',
     fields:{
         addMeal: {
-            type: BookType,
+            type: MealType,
             args: {
                 foodname: {type : new GraphQLNonNull(GraphQLString)},
                 calories: {type: GraphQLInt},
@@ -52,6 +52,15 @@ const Mutation = new GraphQLObjectType({
             resolve(parent , args){
                 const meal = new Meal({foodname: args.foodname , calories: args.calories , fat: args.fat, carbs: args.carbs , protein: args.protein})
                 return meal.save();
+            }
+        },
+        deleteMeal:{
+            type: MealType,
+            args:{
+                id: { type: GraphQLID }
+            },
+            resolve(parent,args){
+                return Meal.findByIdAndDelete(args.id);
             }
         }
     }

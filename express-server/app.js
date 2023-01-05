@@ -21,9 +21,12 @@ app.use(
 
 app.listen( 4000 , () => {
     console.log('app is listening')
-    mongoose.connect('mongodb+srv://faisal:faisal@cluster0.lcpbm.mongodb.net/grahql?retryWrites=true&w=majority' ,
+    mongoose.connect('mongodb+srv://mealuser:securepassword@cluster0.44dvn.mongodb.net/?retryWrites=true&w=majority' ,
         {useNewUrlParser: true, useUnifiedTopology: true},() => {
             console.log('connected to mongoose');
 
         })
-})
+    mongoose.connection.once('open',()=>{
+        console.log('connected to database');
+    })
+});
