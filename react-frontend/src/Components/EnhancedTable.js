@@ -21,6 +21,28 @@ import {
     useTable
 } from "react-table";
 import Button from '@mui/material/Button';
+import {gql, useMutation, useQuery} from "@apollo/client";
+
+
+const GET_MEALS = gql`
+{
+    meals{
+        foodname
+        calories
+        fat
+        carbs
+        protein
+    }
+}
+`;
+
+const REMOVE_MEAL = gql`
+mutation deleteMeal ($id: ID){
+    deleteMeal(id:$id){
+        id
+    }
+}
+`;
 
 
 //Handle the checkboxes on the table
@@ -42,10 +64,6 @@ const IndeterminateCheckbox = React.forwardRef(
         )
     }
 );
-// const [totalCal,setTotalCal] = React.useState(0)
-// const [totalFat,setTotalFat] = React.useState(0)
-// const [totalCarbs,setTotalCarbs] = React.useState(0)
-// const [totalProtein,setTotalProtein] = React.useState(0)
 
 const inputStyle = {
     padding: 0,
@@ -119,7 +137,10 @@ const EnhancedTable = ({
     //code gets a single value of state for each call, React handles the storage separately and returns current value via useState on each execution of code
     //update to the current status, using the set state
     const [editableRowIndex, setEditableRowIndex] = React.useState(null);
-
+    const [deleteMeal,{loading:deleting, error:deleteError}] = useMutation(REMOVE_MEAL)
+    const {
+        refetch:refetchMeals
+    } = useQuery(GET_MEALS)
     const {
         getTableProps,
         headerGroups,
@@ -216,17 +237,21 @@ const EnhancedTable = ({
         array.filter((_, i) => !indexs.includes(i));
 
     const deleteMealHandler = (event) => {
+  
         const newData = removeByIndexs(
             data,
             Object.keys(selectedRowIds).map((x) => parseInt(x, 10))
         );
+        Object.keys(selectedRowIds).map((item)=>
+            deleteMeal({
+            variables:{id:data[item].id},
+        }));
         setData(newData);
+        refetchMeals();
     };
 
     const addMealHandler = (user) => {
         const newData = data.concat([user]);
-        const totalCalsValue = ((data.reduce((a, v) => a = a + v.calories, 0)));
-        console.log(totalCalsValue)
         setData(newData);
     };
 
