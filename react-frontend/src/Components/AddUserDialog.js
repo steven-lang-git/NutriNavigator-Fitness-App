@@ -2,19 +2,49 @@ import React, { useState } from 'react'
 
 import AddIcon from '@material-ui/icons/Add'
 import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
-import DialogActions from '@material-ui/core/DialogActions'
-import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
-import DialogTitle from '@material-ui/core/DialogTitle'
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import Slide from '@mui/material/Slide';
+import { TransitionProps } from '@mui/material/transitions'
 import IconButton from '@material-ui/core/IconButton'
 import PropTypes from 'prop-types'
 import Switch from '@material-ui/core/Switch'
 import TextField from '@material-ui/core/TextField'
 import Tooltip from '@material-ui/core/Tooltip'
-import { gql, useMutation } from '@apollo/client';
+import {gql, useMutation, useQuery} from "@apollo/client"
 
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
+// DEFINE MUTATION
+const GET_MEALS = gql`
+{
+    meals{
+        foodname
+        calories
+        fat
+        carbs
+        protein
+    }
+}
+`;
+const ADD_MEAL = gql`
+    mutation AddMeal($foodname: String! , $calories:Int!, $fat:Int!, $carbs:Int!, $protein:Int!) {
+  
+        addMeal(foodname: $foodname , calories: $calories, fat: $fat , carbs: $carbs,protein: $protein) {
+            id
+            foodname
+            calories
+            fat
+            carbs
+            protein
+            
+        }
+    }
+`
 const initialMeal = {
     foodname: '',
     calories: 0,
@@ -26,6 +56,17 @@ const initialMeal = {
 
 
 const AddUserDialog = props => {
+    const {
+        data = {meals:[]},
+        refetch:refetchMeals
+    } = useQuery(GET_MEALS)
+
+    const [foodname , setFoodName] = useState('')
+    const [calories , setCalories] = useState('')
+    const [fat , setFat] = useState('')
+    const [carbs , setCarbs] = useState('')
+    const [protein , setProtein] = useState('')
+    const [addMeal] = useMutation(ADD_MEAL)
     const [meal, setMeal] = useState(initialMeal)
     const { addMealHandler } = props
     const [open, setOpen] = React.useState(false)
@@ -57,13 +98,41 @@ const AddUserDialog = props => {
     }
 
     const handleAdd = event => {
-        addMealHandler(meal)
-        setMeal(initialMeal)
+   
+        addMeal({variables:{foodname,calories,fat,carbs,protein }})
         switchState.addMultiple ? setOpen(true) : setOpen(false)
     }
-
+    async function addNewMeal(){
+        addMealHandler(meal)
+        setMeal(initialMeal)
+        await addMeal({variables:{foodname,calories,fat,carbs,protein }})
+        refetchMeals()
+        switchState.addMultiple ? setOpen(true) : setOpen(false)
+    
+    }
+    //... spread syntax allows an iterable, such as an array or string to be expanded in places where zero or more arguments (for function calls) or elements are expected
+    //used to add key-value pairs to the object being created
     const handleChange = name => ({ target: { value } }) => {
         setMeal({ ...meal, [name]: value })
+        switch (name){
+            case 'foodname':
+                setFoodName(value)
+                break
+            case 'calories':
+                setCalories(parseInt(value))
+                break
+            case 'fat':
+                setFat(parseInt(value))
+                break
+            case 'carbs':
+                setCarbs(parseInt(value))
+                break
+            case 'protein':
+                setProtein(parseInt(value))
+                break
+        }
+        //if name = foodname do setfoodname else
+
     }
     return (
         <div>
@@ -72,15 +141,17 @@ const AddUserDialog = props => {
                     <AddIcon />
                 </IconButton>
             </Tooltip>
-            <Dialog
+            <Dialog   
                 open={open}
+                TransitionComponent={Transition}
+                keepMounted
                 onClose={handleClose}
-                aria-labelledby="form-dialog-title"
+                aria-describedby="alert-dialog-slide-description"
             >
                 <DialogTitle id="form-dialog-title">
                     Add Meal
                 </DialogTitle>
-                <DialogContent></DialogContent>
+                <DialogContent>
                 <DialogContentText>
                     Add a meal to today's meals
                 </DialogContentText>
@@ -129,6 +200,7 @@ const AddUserDialog = props => {
                     value={meal.protein}
                     onChange={handleChange('protein')}
                 />
+                </DialogContent>
                 <DialogActions>
                     <Tooltip title="Add Multiple">
                         <Switch
@@ -140,7 +212,7 @@ const AddUserDialog = props => {
                     </Tooltip>
 
                     <Button onClick={handleClose} color="primary">Cancel</Button>
-                    <Button onClick={handleAdd} color="primary">
+                    <Button onClick={addNewMeal} color="primary">
                         Add
                     </Button>
 
