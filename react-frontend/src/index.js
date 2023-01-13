@@ -2,20 +2,39 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
+
+import { ApolloClient, HttpLink, InMemoryCache, ApolloProvider, gql, from} from '@apollo/client';
+import { onError } from "@apollo/client/link/error";
 import reportWebVitals from './reportWebVitals';
-const client = new ApolloClient({
-  uri: 'https://flyby-gateway.herokuapp.com/',
-  cache: new InMemoryCache(),
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
+const httpLink = new HttpLink({ uri: 'http://localhost:4000/graphql' })
+
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: from([errorLink, httpLink]),
+});
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 
 root.render(
-  <ApolloProvider client={client}>
-    <App />
+  <React.StrictMode>
+
+    <ApolloProvider client={client}>
+      <App />
     </ApolloProvider>,
+  </React.StrictMode>,
+  document.getElementById('root')
+
 );
 
 // If you want to start measuring performance in your app, pass a function
