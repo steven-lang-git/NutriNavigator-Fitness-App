@@ -21,6 +21,7 @@ app.use(
 
 app.listen( 4000 , () => {
     console.log('app is listening')
+    mongoose.set("strictQuery", false);
     mongoose.connect('mongodb+srv://mealuser:securepassword@cluster0.44dvn.mongodb.net/?retryWrites=true&w=majority' ,
         {useNewUrlParser: true, useUnifiedTopology: true},() => {
             console.log('connected to mongoose');
