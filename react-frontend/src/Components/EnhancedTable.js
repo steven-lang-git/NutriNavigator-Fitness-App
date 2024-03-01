@@ -21,7 +21,9 @@ import {
     useTable
 } from "react-table";
 import Button from '@mui/material/Button';
-import {gql, useMutation, useQuery} from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { lighten, makeStyles } from '@material-ui/core/styles';
+import { lineHeight } from "@mui/system";
 
 
 const GET_MEALS = gql`
@@ -44,6 +46,48 @@ mutation deleteMeal ($id: ID){
 }
 `;
 
+const useEnhancedTableHeadStyles = makeStyles(theme => ({
+    root: {
+        '& .MuiTypography-root': {
+            color: 'white',
+            fontFamily: "Roboto",
+
+        },
+        '& .MuiTypography-h6':
+        {
+            fontSize: 24,
+            lineHeight: 1.5,
+            fontWeight: 600,
+            textTransform: 'capitalize',
+        },
+        '& .MuiTableCell-head':
+        {
+            fontSize: 24,
+            lineHeight: 1.5,
+            fontWeight: 600,
+            color: 'white',
+
+        },
+        '& .MuiSvgIcon-root':
+        {
+            color: 'white'
+        }
+        ,
+        '& .MuiTableCell-root':
+        {
+            borderBottom: 0,
+        },
+        '& .MuiTableCell-body': {
+            color: '#e1ffa0',
+
+        },
+
+
+    },
+
+    active: {},
+}))
+
 
 //Handle the checkboxes on the table
 const IndeterminateCheckbox = React.forwardRef(
@@ -59,18 +103,13 @@ const IndeterminateCheckbox = React.forwardRef(
 
         return (
             <>
-                <Checkbox ref={resolvedRef} {...rest} />
+                <Checkbox ref={resolvedRef} {...rest} style={{ color: 'white' }} />
             </>
         )
     }
 );
 
-const inputStyle = {
-    padding: 0,
-    margin: 0,
-    border: 0,
-    background: 'transparent'
-};
+
 //creating the editable cell containers
 const EditableCell = ({
     value: initialValue,
@@ -137,9 +176,9 @@ const EnhancedTable = ({
     //code gets a single value of state for each call, React handles the storage separately and returns current value via useState on each execution of code
     //update to the current status, using the set state
     const [editableRowIndex, setEditableRowIndex] = React.useState(null);
-    const [deleteMeal,{loading:deleting, error:deleteError}] = useMutation(REMOVE_MEAL)
+    const [deleteMeal, { loading: deleting, error: deleteError }] = useMutation(REMOVE_MEAL)
     const {
-        refetch:refetchMeals
+        refetch: refetchMeals
     } = useQuery(GET_MEALS)
     const {
         getTableProps,
@@ -170,36 +209,38 @@ const EnhancedTable = ({
         useRowSelect,
         (hooks) => {
             hooks.allColumns.push((columns) => [
-                // Let's make a column for selection
                 {
                     id: "selection",
-                    // The header can use the table's getToggleAllRowsSelectedProps method
-                    // to render a checkbox.  Pagination is a problem since this will select all
-                    // rows even though not all rows are on the current page.  The solution should
-                    // be server side pagination.  For one, the clients should not download all
-                    // rows in most cases.  The client should only download data for the current page.
-                    // In that case, getToggleAllRowsSelectedProps works fine.
+      
                     Header: ({ getToggleAllRowsSelectedProps }) => (
                         <div>
                             <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
                         </div>
                     ),
-                    // The cell can use the individual row's getToggleRowSelectedProps method
-                    // to the render a checkbox
+     
                     Cell: ({ row }) => (
                         <div>
-                            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+                            <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} style={{ color: 'white' }} />
                         </div>
                     )
                 },
                 ...columns,
                 // pass edit hook
                 {
-                    accessor: "edit",
-                    id: "edit",
-                    Header: "edit",
+                    accessor: "Edit",
+                    id: "Edit",
+                    Header: "",
                     Cell: ({ row, setEditableRowIndex, editableRowIndex }) => (
                         <Button
+                            style={{
+                                display: 'flex',
+                                position: 'relative',
+                                alignItems: 'left',
+                                color: '#e1ffa0',
+                                textDecoration: 'none',
+                                fontSize: 18,
+                                lineHeight: 1.5,
+                            }}
                             className="action-button"
                             onClick={() => {
                                 const currentIndex = row.index;
@@ -210,8 +251,6 @@ const EnhancedTable = ({
                                     // request for saving the updated row
                                     setEditableRowIndex(null);
                                     const updatedRow = row.values;
-                                    console.log("updated row values:");
-                                    console.log(updatedRow);
                                     // call your updateRow API
                                 }
                             }}
@@ -219,6 +258,7 @@ const EnhancedTable = ({
                             {/* single action button supporting 2 modes */}
                             {editableRowIndex !== row.index ? "Edit" : "Save"}
                         </Button>
+
                     )
                 }
             ]);
@@ -237,15 +277,15 @@ const EnhancedTable = ({
         array.filter((_, i) => !indexs.includes(i));
 
     const deleteMealHandler = (event) => {
-  
+
         const newData = removeByIndexs(
             data,
             Object.keys(selectedRowIds).map((x) => parseInt(x, 10))
         );
-        Object.keys(selectedRowIds).map((item)=>
+        Object.keys(selectedRowIds).map((item) =>
             deleteMeal({
-            variables:{id:data[item].id},
-        }));
+                variables: { id: data[item].id },
+            }));
         setData(newData);
         refetchMeals();
     };
@@ -255,9 +295,12 @@ const EnhancedTable = ({
         setData(newData);
     };
 
+    const cls = useEnhancedTableHeadStyles();
+
+
     // Render the UI for your table
     return (
-        <TableContainer>
+        <TableContainer classes={{ root: cls.root }}>
             <TableToolbar
                 numSelected={Object.keys(selectedRowIds).length}
                 deleteMealHandler={deleteMealHandler}
@@ -275,6 +318,7 @@ const EnhancedTable = ({
                                     {...(column.id === "selection"
                                         ? column.getHeaderProps()
                                         : column.getHeaderProps(column.getSortByToggleProps()))}
+
                                 >
                                     {column.render("Header")}
                                     {column.id !== "selection" ? (
@@ -293,10 +337,10 @@ const EnhancedTable = ({
                     {page.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <TableRow {...row.getRowProps()}>
+                            <TableRow {...row.getRowProps()} >
                                 {row.cells.map((cell) => {
                                     return (
-                                        <TableCell {...cell.getCellProps()}>
+                                        <TableCell {...cell.getCellProps()} classes={{ root: cls.root }}>
                                             {cell.render("Cell")}
                                         </TableCell>
                                     );
@@ -306,7 +350,7 @@ const EnhancedTable = ({
                     })}
                 </TableBody>
 
-                <TableFooter>
+                <TableFooter >
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[
@@ -326,6 +370,7 @@ const EnhancedTable = ({
                             onPageChange={handleChangePage}
                             onRowsPerPageChange={handleChangeRowsPerPage}
                             ActionsComponent={TablePaginationActions}
+                            style={{ color: 'white' }}
                         />
                     </TableRow>
                 </TableFooter>
