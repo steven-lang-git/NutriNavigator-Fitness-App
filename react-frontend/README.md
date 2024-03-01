@@ -35,11 +35,11 @@ The React frontend is responsible for rendering the user interface of the web ap
     ```
 4. The server will run on `http://localhost:5000`.
 
-### Overview
-The Express backend provides the server-side functionality for the web application. It handles API requests, database interactions, and other server-related tasks.
+# fitness-Application
+#Reminders for pushing
+-git add .
+-git commit -m "Styled notifications"
+-git push https://github.com/steven-lang-git/fitness-Application.git main
 
-## Contributing
-Contributions are welcome! Feel free to submit issues or pull requests if you encounter any problems or have suggestions for improvement.
-
-## License
-This project is licensed under the [MIT License](LICENSE).
+#Reminders for pulling
+-git pull https://github.com/steven-lang-git/fitness-Application.git main
